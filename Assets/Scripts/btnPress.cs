@@ -25,7 +25,7 @@ public class btnPress : MonoBehaviour
         
     }
 
-    void Replay()
+    public void Replay()
     {
         SceneManager.LoadScene("Main");
     }
@@ -56,5 +56,14 @@ public class btnPress : MonoBehaviour
         }
 
         turn = newTurn;
+    }
+
+    public Sprite GetSprite(int turn)
+    {
+        if (turn == 1)
+        {
+            return circle;
+        }
+        return cross;
     }
 }

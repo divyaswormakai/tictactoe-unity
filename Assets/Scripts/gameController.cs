@@ -8,18 +8,20 @@ using TMPro;
 public class gameController : MonoBehaviour
 {
     public Button[] btns;
-    public TextMeshProUGUI info;
+    public TextMeshProUGUI info,winnertxt;
     public Button replay;
+    public Image winner;
 
     List<int> doneCircle;
     List<int> doneCross;
     bool winFlag = false;
+    int count = 0;
     void Start()
     {
         doneCircle = new List<int>();
         doneCross = new List<int>();
 
-        info.text = "Player 1's Turn";
+        info.text = "Players' Turn";
     }
 
     public void Mark(string n,int turn)
@@ -27,17 +29,22 @@ public class gameController : MonoBehaviour
         if(turn == 1)
         {
             doneCircle.Add(int.Parse(n));
-            info.text = "Player 2's turn";
+            info.text = "Players' turn";
         }
         else
         {
             doneCross.Add(int.Parse(n));
-            info.text = "Player 1's turn";
+            info.text = "Players' turn";
         }
+        count++;
     }
 
     public void Check(int turn)
     {
+        if (count >= 9)
+        {
+            replay.gameObject.SetActive(true);
+        }
         List<int> currList = new List<int>();
         List<bool> boolList = new List<bool>();
         if(turn == 1)
@@ -55,12 +62,15 @@ public class gameController : MonoBehaviour
         Subset(currList, 3, 0, 0, boolList);
         if (winFlag)
         {
-            info.text = "Player " + turn + " Wins";
             foreach(Button btn in btns)
             {
                 btn.interactable = false;
             }
             replay.gameObject.SetActive(true);
+
+            winner.sprite = FindObjectOfType<btnPress>().GetSprite(turn);
+            winner.gameObject.SetActive(true);
+            winnertxt.gameObject.SetActive(true);
         }
     }
 
@@ -101,4 +111,5 @@ public class gameController : MonoBehaviour
         used[start] = false;
         Subset(A, k, start + 1, currLen, used);
     }
+
 }
