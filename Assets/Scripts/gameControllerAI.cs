@@ -17,6 +17,8 @@ public class gameControllerAI : MonoBehaviour
     bool winFlag = false;
     int count = 0;
 
+    int currCrossIndex = 0;
+
     btnPressAI btnScript;
 
     void Start()
@@ -38,15 +40,19 @@ public class gameControllerAI : MonoBehaviour
        
         doneCircle.Add(int.Parse(n));
         count ++;
+        print("Done-circle");
+        foreach (int i in doneCircle) { print(i); }
     }
+
 
     public void MarkInt(int index)
     {
         doneCross.Add(index);
         count++;
-        btns[index].GetComponentInChildren<Image>().sprite = btnScript.GetSprite(2);
-        print(index + " is the index marked");
-        btns[index].interactable = false;
+        btns[currCrossIndex].GetComponentInChildren<Image>().sprite = btnScript.GetSprite(2);
+        print("Done-Cross");
+        foreach (int i in doneCross) { print(i); }
+        btns[currCrossIndex].interactable = false;
     }
 
     public void Check(int turn)
@@ -261,29 +267,28 @@ public class gameControllerAI : MonoBehaviour
     //getsprite 1 ie circle is minimizing factor and 2 ie cross is maximizing
     public int FindBestSolution()
     {
-                    int bestVal = -1000;
-            int bestMove = -1;
+        int bestVal = -1000;
+        int bestMove = -1;
 
-            for (int i = 0; i < btns.Length; i++)
+        for (int i = 0; i < btns.Length; i++)
+        {
+            if (btns[i].GetComponentInChildren<Image>().sprite == null)          //Emptyy
             {
-                if (btns[i].GetComponentInChildren<Image>().sprite == null)          //Emptyy
+                btns[i].GetComponentInChildren<Image>().sprite = btnScript.GetSprite(2);          //set the value to cross
+
+                int moveVal = MiniMax(0, false);
+
+                btns[i].GetComponentInChildren<Image>().sprite = null;      //undo
+
+                if (moveVal > bestVal)
                 {
-                    btns[i].GetComponentInChildren<Image>().sprite = btnScript.GetSprite(2);          //set the value to cross
-
-                    int moveVal = MiniMax(0, false);
-
-                    btns[i].GetComponentInChildren<Image>().sprite = null;      //undo
-
-                    if (moveVal > bestVal)
-                    {
-                        bestMove = i;
-                        bestVal = moveVal;
-                    }
+                    bestMove = i;
+                    bestVal = moveVal;
                 }
             }
-            print("ASDFASDFSDF");
-            print(bestMove);
-            return bestMove;
+        }
+        currCrossIndex = bestMove;
+        return Int32.Parse(btns[bestMove].name);
         
     }
 }

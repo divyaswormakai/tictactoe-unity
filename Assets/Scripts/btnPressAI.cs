@@ -16,10 +16,12 @@ public class btnPressAI : MonoBehaviour
         gC = FindObjectOfType<gameControllerAI>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("Menu");
+        }
     }
 
     public void Replay()
@@ -37,16 +39,19 @@ public class btnPressAI : MonoBehaviour
         if (count > 4)
         {
             gC.Check(1);
+            
         }
+        count++;
         //Bot Turn
         int temp = gC.FindBestSolution();
         gC.MarkInt(temp);
-        if (count > 4)
+        print(temp);
+        if (count > 3)
         {
             gC.Check(2);
         }
 
-        count += 2;
+        count ++;
 
     }
     //gcMark(btn.name,2) assign sprite of cross set interactable as false and gc.Check(2)

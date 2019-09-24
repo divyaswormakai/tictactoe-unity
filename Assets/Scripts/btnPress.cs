@@ -19,10 +19,12 @@ public class btnPress : MonoBehaviour
         test = FindObjectOfType<btnAnimation>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("Menu");
+        }
     }
 
     public void Replay()
