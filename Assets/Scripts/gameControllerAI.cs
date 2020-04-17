@@ -14,6 +14,9 @@ public class gameControllerAI : MonoBehaviour
 
     List<int> doneCircle;
     List<int> doneCross;
+
+    // 0 for null 1 for player and 2 for bot
+    int[] boardStates;
     bool winFlag = false;
     int count = 0;
 
@@ -25,33 +28,41 @@ public class gameControllerAI : MonoBehaviour
     {
         doneCircle = new List<int>();
         doneCross = new List<int>();
-      
+
+        boardStates = new int[10];
 
         btnScript = FindObjectOfType<btnPressAI>();
 
-        for(int i = 0; i < 9; i++)
+        for (int i = 0; i < 9; i++)
         {
             btns[i].GetComponentInChildren<Image>().sprite = null;
+            boardStates[i] = 0;
         }
     }
 
+    //This is setting og image for the player
     public void Mark(string n)
     {
-       
+
         doneCircle.Add(int.Parse(n));
-        count ++;
+        boardStates[int.Parse(n)] = 1;
+        count++;
         print("Done-circle");
         foreach (int i in doneCircle) { print(i); }
+        print("--------");
+        foreach (int i in boardStates) { print(i); }
     }
 
-
+    //this is setting for the bot
     public void MarkInt(int index)
     {
         doneCross.Add(index);
         count++;
         btns[currCrossIndex].GetComponentInChildren<Image>().sprite = btnScript.GetSprite(2);
+        boardStates[index] = 2;
+
         print("Done-Cross");
-        foreach (int i in doneCross) { print(i); }
+        // foreach (int i in doneCross) { print(i); }
         btns[currCrossIndex].interactable = false;
     }
 
@@ -76,6 +87,7 @@ public class gameControllerAI : MonoBehaviour
             boolList.Add(false);
         }
         Subset(currList, 3, 0, 0, boolList);
+        //If won
         if (winFlag)
         {
             foreach (Button btn in btns)
@@ -128,11 +140,12 @@ public class gameControllerAI : MonoBehaviour
         Subset(A, k, start + 1, currLen, used);
     }
 
+    //Check if the moves still remaining
     bool IsMoveLeft()
     {
-        for(int i = 0; i < 9; i++)
+        for (int i = 0; i < 9; i++)
         {
-            if(btns[i].GetComponentInChildren<Image>().sprite == null)
+            if (btns[i].GetComponentInChildren<Image>().sprite == null)
             {
                 return true;
             }
@@ -147,9 +160,9 @@ public class gameControllerAI : MonoBehaviour
         for (int i = 0; i <= 6; i += 3)
         {
             temp1 = btns[i].GetComponentInChildren<Image>().sprite;
-            temp2 = btns[i+1].GetComponentInChildren<Image>().sprite;
+            temp2 = btns[i + 1].GetComponentInChildren<Image>().sprite;
             temp3 = btns[i + 2].GetComponentInChildren<Image>().sprite;
-            if (temp1 == temp2 && temp2 == temp3 && temp1!=null)
+            if (temp1 == temp2 && temp2 == temp3 && temp1 != null)
             {
                 if (temp1.name == "cross3")
                 {
@@ -160,15 +173,15 @@ public class gameControllerAI : MonoBehaviour
                     return -10;
                 }
             }
-        } 
-        
+        }
+
         //columnwise
-        for(int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
         {
             temp1 = btns[i].GetComponentInChildren<Image>().sprite;
             temp2 = btns[i + 3].GetComponentInChildren<Image>().sprite;
             temp3 = btns[i + 6].GetComponentInChildren<Image>().sprite;
-            if (temp1 == temp2 && temp2 == temp3 && temp1!=null)
+            if (temp1 == temp2 && temp2 == temp3 && temp1 != null)
             {
                 if (temp1.name == "cross3")
                 {
@@ -200,7 +213,7 @@ public class gameControllerAI : MonoBehaviour
         temp1 = btns[2].GetComponentInChildren<Image>().sprite;
         temp2 = btns[4].GetComponentInChildren<Image>().sprite;
         temp3 = btns[6].GetComponentInChildren<Image>().sprite;
-        if (temp1 == temp2 && temp2 == temp3  && temp1!=null)
+        if (temp1 == temp2 && temp2 == temp3 && temp1 != null)
         {
             if (temp1.name == "cross3")
             {
@@ -215,7 +228,7 @@ public class gameControllerAI : MonoBehaviour
         return 0;
     }
 
-    int MiniMax(int depth,bool isMax)
+    int MiniMax(int depth, bool isMax, int alpha, int beta)
     {
         int score = Evaluate();
 
@@ -228,19 +241,27 @@ public class gameControllerAI : MonoBehaviour
         {
             return 0;
         }
-        
+
         if (isMax)
         {
             int best = -1000;
-            for(int i = 0; i < 9; i++)
+            for (int i = 0; i < 9; i++)
             {
+                //-----------------------replace btns with value arrays here too
                 if (btns[i].GetComponentInChildren<Image>().sprite == null)       //empty
                 {
                     btns[i].GetComponentInChildren<Image>().sprite = btnScript.GetSprite(2);          //set the value to cross
 
-                    best = Math.Max(best, MiniMax(depth+1, !isMax));
+                    best = Math.Max(best, MiniMax(depth + 1, !isMax, alpha, beta));
 
                     btns[i].GetComponentInChildren<Image>().sprite = null;      //undo
+
+                    alpha = Math.Max(alpha, best);
+
+                    if (beta <= alpha)
+                    {
+                        break;
+                    }
                 }
             }
             return best;
@@ -255,9 +276,16 @@ public class gameControllerAI : MonoBehaviour
                 {
                     btns[i].GetComponentInChildren<Image>().sprite = btnScript.GetSprite(1);          //set the value to cross
 
-                    best = Math.Min(best, MiniMax(depth + 1, !isMax));
+                    best = Math.Min(best, MiniMax(depth + 1, !isMax, alpha, beta));
 
                     btns[i].GetComponentInChildren<Image>().sprite = null;      //undo
+
+                    beta = Math.Min(beta, best);
+
+                    if (beta <= alpha)
+                    {
+                        break;
+                    }
                 }
             }
             return best;
@@ -272,11 +300,12 @@ public class gameControllerAI : MonoBehaviour
 
         for (int i = 0; i < btns.Length; i++)
         {
+            //------------------------set value of array instead of image here
             if (btns[i].GetComponentInChildren<Image>().sprite == null)          //Emptyy
             {
                 btns[i].GetComponentInChildren<Image>().sprite = btnScript.GetSprite(2);          //set the value to cross
 
-                int moveVal = MiniMax(0, false);
+                int moveVal = MiniMax(0, false, -1000, 1000);
 
                 btns[i].GetComponentInChildren<Image>().sprite = null;      //undo
 
@@ -289,6 +318,6 @@ public class gameControllerAI : MonoBehaviour
         }
         currCrossIndex = bestMove;
         return Int32.Parse(btns[bestMove].name);
-        
+
     }
 }

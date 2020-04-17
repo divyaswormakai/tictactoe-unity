@@ -34,11 +34,11 @@ public class btnPress : MonoBehaviour
 
     public void AssignNumber(Button gameobject)
     {
-        gC.Mark(gameobject.name,turn);
+        gC.Mark(gameobject.name, turn);
         int newTurn = 0;
         if (turn == 1)
         {
-            gameobject.GetComponentInChildren<Image>().sprite = circle;  
+            gameobject.GetComponentInChildren<Image>().sprite = circle;
             newTurn = 2;
         }
         else
@@ -51,7 +51,7 @@ public class btnPress : MonoBehaviour
         gameobject.interactable = false;
 
         count++;
-        
+
         if (count > 4)
         {
             gC.Check(turn);

@@ -11,6 +11,10 @@ public class btnPressAI : MonoBehaviour
 
     gameControllerAI gC;
     int count = 0;
+
+    private float delayTime = 1.5f;
+
+    private bool isClickable = true;
     void Start()
     {
         gC = FindObjectOfType<gameControllerAI>();
@@ -31,18 +35,32 @@ public class btnPressAI : MonoBehaviour
 
     public void AssignNumber(Button gameobject)
     {
-        gC.Mark(gameobject.name);
-        gameobject.GetComponentInChildren<Image>().sprite = circle;
-        
-        gameobject.interactable = false;
-
-        if (count > 4)
+        if (isClickable)
         {
-            gC.Check(1);
-            
+            gC.Mark(gameobject.name);
+            gameobject.GetComponentInChildren<Image>().sprite = circle;
+
+            gameobject.interactable = false;
+
+            if (count > 4)
+            {
+                gC.Check(1);
+            }
+            count++;
+            isClickable = false;
+
+            StartCoroutine(CallBotTurn());
+
+            count++;
         }
-        count++;
-        //Bot Turn
+
+    }
+    //gcMark(btn.name,2) assign sprite of cross set interactable as false and gc.Check(2)
+
+    IEnumerator CallBotTurn()
+    {
+        yield return new WaitForSeconds(delayTime);
+
         int temp = gC.FindBestSolution();
         gC.MarkInt(temp);
         print(temp);
@@ -51,11 +69,8 @@ public class btnPressAI : MonoBehaviour
             gC.Check(2);
         }
 
-        count ++;
-
+        isClickable = true;
     }
-    //gcMark(btn.name,2) assign sprite of cross set interactable as false and gc.Check(2)
-
     public Sprite GetSprite(int turn)
     {
         if (turn == 1)
