@@ -12,6 +12,8 @@ public class gameControllerAI : MonoBehaviour
     public Button replay;
     public Image winner;
 
+    public TextMeshProUGUI botInfo;
+
     List<int> doneCircle;
     List<int> doneCross;
 
@@ -47,10 +49,11 @@ public class gameControllerAI : MonoBehaviour
         doneCircle.Add(int.Parse(n));
         boardStates[int.Parse(n)] = 1;
         count++;
-        print("Done-circle");
-        foreach (int i in doneCircle) { print(i); }
-        print("--------");
-        foreach (int i in boardStates) { print(i); }
+        botInfo.gameObject.SetActive(true);
+        // print("Done-circle");
+        // foreach (int i in doneCircle) { print(i); }
+        // print("--------");
+        // foreach (int i in boardStates) { print(i); }
     }
 
     //this is setting for the bot
@@ -60,6 +63,7 @@ public class gameControllerAI : MonoBehaviour
         count++;
         btns[currCrossIndex].GetComponentInChildren<Image>().sprite = btnScript.GetSprite(2);
         boardStates[index] = 2;
+        botInfo.gameObject.SetActive(false);
 
         print("Done-Cross");
         // foreach (int i in doneCross) { print(i); }
@@ -95,6 +99,7 @@ public class gameControllerAI : MonoBehaviour
                 btn.interactable = false;
             }
             replay.gameObject.SetActive(true);
+            botInfo.gameObject.SetActive(false);
 
             winner.sprite = btnScript.GetSprite(turn);
             winner.gameObject.SetActive(true);
